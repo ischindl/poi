@@ -33,7 +33,7 @@ public class HSSFSimpleShape extends HSSFShape
     public final static short       OBJECT_TYPE_RECTANGLE          = HSSFShapeTypes.Rectangle;
     public final static short       OBJECT_TYPE_OVAL               = HSSFShapeTypes.Ellipse;
     public final static short       OBJECT_TYPE_ARC                = HSSFShapeTypes.Arc;
-    //    public final static short       OBJECT_TYPE_CHART              = 5;
+    public final static short       OBJECT_TYPE_CHART              = 5;
 //    public final static short       OBJECT_TYPE_TEXT               = 6;
 //    public final static short       OBJECT_TYPE_BUTTON             = 7;
     public final static short       OBJECT_TYPE_PICTURE            = HSSFShapeTypes.PictureFrame;

@@ -29,87 +29,107 @@ import org.openxmlformats.schemas.drawingml.x2006.chart.*;
  */
 class XSSFChartUtil {
 
-    private XSSFChartUtil() {}
+	private XSSFChartUtil() {
+	}
 
-    /**
-     * Builds CTAxDataSource object content from POI ChartDataSource.
-     * @param ctAxDataSource OOXML data source to build
-     * @param dataSource POI data source to use
-     */
-    public static void buildAxDataSource(CTAxDataSource ctAxDataSource, ChartDataSource<?> dataSource) {
-        if (dataSource.isNumeric()) {
-            if (dataSource.isReference()) {
-                buildNumRef(ctAxDataSource.addNewNumRef(), dataSource);
-            } else {
-                buildNumLit(ctAxDataSource.addNewNumLit(), dataSource);
-            }
-        } else {
-            if (dataSource.isReference()) {
-                buildStrRef(ctAxDataSource.addNewStrRef(), dataSource);
-            } else {
-                buildStrLit(ctAxDataSource.addNewStrLit(), dataSource);
-            }
-        }
-    }
+	/**
+	 * Builds CTAxDataSource object content from POI ChartDataSource.
+	 *
+	 * @param ctAxDataSource
+	 *            OOXML data source to build
+	 * @param dataSource
+	 *            POI data source to use
+	 */
+	public static void buildAxDataSource(CTAxDataSource ctAxDataSource, ChartDataSource<?> dataSource) {
+		if (dataSource.isNumeric()) {
+			if (dataSource.isReference()) {
+				buildNumRef(ctAxDataSource.addNewNumRef(), dataSource);
+			} else {
+				buildNumLit(ctAxDataSource.addNewNumLit(), dataSource);
+			}
+		} else {
+			if (dataSource.isReference()) {
+				buildStrRef(ctAxDataSource.addNewStrRef(), dataSource);
+			} else {
+				buildStrLit(ctAxDataSource.addNewStrLit(), dataSource);
+			}
+		}
+	}
 
-    /**
-     * Builds CTNumDataSource object content from POI ChartDataSource
-     * @param ctNumDataSource OOXML data source to build
-     * @param dataSource POI data source to use
-     */
-    public static void buildNumDataSource(CTNumDataSource ctNumDataSource,
-                                          ChartDataSource<? extends Number> dataSource) {
-        if (dataSource.isReference()) {
-            buildNumRef(ctNumDataSource.addNewNumRef(), dataSource);
-        } else {
-            buildNumLit(ctNumDataSource.addNewNumLit(), dataSource);
-        }
-    }
+	/**
+	 * Builds CTSerTx object content from POI ChartDataSource.
+	 *
+	 * @param ctTxDataSource
+	 *            OOXML data source to build
+	 * @param dataSource
+	 *            POI data source to use
+	 */
+	public static void buildTxDataSource(CTSerTx ctTxDataSource, ChartDataSource<?> dataSource) {
+		if (dataSource.isReference()) {
+			buildStrRef(ctTxDataSource.addNewStrRef(), dataSource);
+		}
+	}
 
-    private static void buildNumRef(CTNumRef ctNumRef, ChartDataSource<?> dataSource) {
-        ctNumRef.setF(dataSource.getFormulaString());
-        CTNumData cache = ctNumRef.addNewNumCache();
-        fillNumCache(cache, dataSource);
-    }
+	/**
+	 * Builds CTNumDataSource object content from POI ChartDataSource
+	 *
+	 * @param ctNumDataSource
+	 *            OOXML data source to build
+	 * @param dataSource
+	 *            POI data source to use
+	 */
+	public static void buildNumDataSource(CTNumDataSource ctNumDataSource, ChartDataSource<? extends Number> dataSource) {
+		if (dataSource.isReference()) {
+			buildNumRef(ctNumDataSource.addNewNumRef(), dataSource);
+		} else {
+			buildNumLit(ctNumDataSource.addNewNumLit(), dataSource);
+		}
+	}
 
-    private static void buildNumLit(CTNumData ctNumData, ChartDataSource<?> dataSource) {
-        fillNumCache(ctNumData, dataSource);
-    }
+	private static void buildNumRef(CTNumRef ctNumRef, ChartDataSource<?> dataSource) {
+		ctNumRef.setF(dataSource.getFormulaString());
+		CTNumData cache = ctNumRef.addNewNumCache();
+		fillNumCache(cache, dataSource);
+	}
 
-    private static void buildStrRef(CTStrRef ctStrRef, ChartDataSource<?> dataSource) {
-        ctStrRef.setF(dataSource.getFormulaString());
-        CTStrData cache = ctStrRef.addNewStrCache();
-        fillStringCache(cache, dataSource);
-    }
+	private static void buildNumLit(CTNumData ctNumData, ChartDataSource<?> dataSource) {
+		fillNumCache(ctNumData, dataSource);
+	}
 
-    private static void buildStrLit(CTStrData ctStrData, ChartDataSource<?> dataSource) {
-        fillStringCache(ctStrData, dataSource);
-    }
+	private static void buildStrRef(CTStrRef ctStrRef, ChartDataSource<?> dataSource) {
+		ctStrRef.setF(dataSource.getFormulaString());
+		CTStrData cache = ctStrRef.addNewStrCache();
+		fillStringCache(cache, dataSource);
+	}
 
-    private static void fillStringCache(CTStrData cache, ChartDataSource<?> dataSource) {
-        int numOfPoints = dataSource.getPointCount();
-        cache.addNewPtCount().setVal(numOfPoints);
-        for (int i = 0; i < numOfPoints; ++i) {
-            Object value = dataSource.getPointAt(i);
-            if (value != null) {
-                CTStrVal ctStrVal = cache.addNewPt();
-                ctStrVal.setIdx(i);
-                ctStrVal.setV(value.toString());
-            }
-        }
+	private static void buildStrLit(CTStrData ctStrData, ChartDataSource<?> dataSource) {
+		fillStringCache(ctStrData, dataSource);
+	}
 
-    }
+	private static void fillStringCache(CTStrData cache, ChartDataSource<?> dataSource) {
+		int numOfPoints = dataSource.getPointCount();
+		cache.addNewPtCount().setVal(numOfPoints);
+		for (int i = 0; i < numOfPoints; ++i) {
+			Object value = dataSource.getPointAt(i);
+			if (value != null) {
+				CTStrVal ctStrVal = cache.addNewPt();
+				ctStrVal.setIdx(i);
+				ctStrVal.setV(value.toString());
+			}
+		}
 
-    private static void fillNumCache(CTNumData cache, ChartDataSource<?> dataSource) {
-        int numOfPoints = dataSource.getPointCount();
-        cache.addNewPtCount().setVal(numOfPoints);
-        for (int i = 0; i < numOfPoints; ++i) {
-            Number value = (Number) dataSource.getPointAt(i);
-            if (value != null) {
-                CTNumVal ctNumVal = cache.addNewPt();
-                ctNumVal.setIdx(i);
-                ctNumVal.setV(value.toString());
-            }
-        }
-    }
+	}
+
+	private static void fillNumCache(CTNumData cache, ChartDataSource<?> dataSource) {
+		int numOfPoints = dataSource.getPointCount();
+		cache.addNewPtCount().setVal(numOfPoints);
+		for (int i = 0; i < numOfPoints; ++i) {
+			Number value = (Number) dataSource.getPointAt(i);
+			if (value != null) {
+				CTNumVal ctNumVal = cache.addNewPt();
+				ctNumVal.setIdx(i);
+				ctNumVal.setV(value.toString());
+			}
+		}
+	}
 }

@@ -31,6 +31,7 @@ import org.apache.poi.ddf.EscherSerializationListener;
 import org.apache.poi.ddf.EscherSpRecord;
 import org.apache.poi.ddf.EscherSpgrRecord;
 import org.apache.poi.ddf.EscherTextboxRecord;
+import org.apache.poi.hssf.record.aggregates.ChartSubstreamRecordAggregate;
 import org.apache.poi.util.POILogFactory;
 import org.apache.poi.util.POILogger;
 
@@ -754,9 +755,17 @@ public final class EscherAggregate extends AbstractEscherHolderRecord {
      * @param loc - location of the record which sid must be returned
      * @return sid of the record with selected location
      */
-    private static short sid(List <RecordBase>records, int loc) {
-        return ((Record) records.get(loc)).getSid();
-    }
+	private static short sid( List records, int loc )
+	{
+		if(records.get( loc ) instanceof Record)
+			return ( (Record) records.get( loc ) ).getSid();
+		else if((records.get( loc ) instanceof ChartSubstreamRecordAggregate)){
+			return ((Record)((ChartSubstreamRecordAggregate)records.get( loc ) )._bofRec).getSid();
+		}
+		return 0;
+
+	}
+
 
     /**
      * @return unmodifiable copy of the mapping  of {@link EscherClientDataRecord} and {@link EscherTextboxRecord}

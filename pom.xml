@@ -94,6 +94,7 @@
     </organization>
 
     <build>
+		<directory>build/dist</directory>
         <plugins>
 
             <plugin>

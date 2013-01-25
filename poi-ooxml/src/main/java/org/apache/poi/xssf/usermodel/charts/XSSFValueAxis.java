@@ -17,25 +17,25 @@
 
 package org.apache.poi.xssf.usermodel.charts;
 
-import org.apache.poi.ss.usermodel.charts.ChartAxis;
-import org.apache.poi.ss.usermodel.charts.ValueAxis;
-import org.apache.poi.ss.usermodel.charts.AxisPosition;
-import org.apache.poi.ss.usermodel.charts.AxisOrientation;
 import org.apache.poi.ss.usermodel.charts.AxisCrossBetween;
 import org.apache.poi.ss.usermodel.charts.AxisCrosses;
 import org.apache.poi.ss.usermodel.charts.AxisTickMark;
-
+import org.apache.poi.ss.usermodel.charts.AxisPosition;
+import org.apache.poi.ss.usermodel.charts.ChartAxis;
+import org.apache.poi.ss.usermodel.charts.ValueAxis;
 import org.apache.poi.util.Beta;
 import org.apache.poi.xssf.usermodel.XSSFChart;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTValAx;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTAxPos;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTBoolean;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTNumFmt;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTCrosses;
+import org.openxmlformats.schemas.drawingml.x2006.chart.CTNumFmt;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTScaling;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTTickMark;
 import org.openxmlformats.schemas.drawingml.x2006.chart.STCrossBetween;
 import org.openxmlformats.schemas.drawingml.x2006.chart.STTickLblPos;
+import org.openxmlformats.schemas.drawingml.x2006.chart.STTickMark;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTSRgbColor;
 
 /**
  * Value axis type.
@@ -111,6 +111,12 @@ public class XSSFValueAxis extends XSSFChartAxis implements ValueAxis {
 		ctValAx.getCrossAx().setVal(axis.getId());
 	}
 
+	public void addNewMajorGridlines(){
+		CTSRgbColor rgb = CTSRgbColor.Factory.newInstance();
+		rgb.setVal(new byte[]{(byte)0xb3,(byte)0xb3,(byte)0xb3});
+		ctValAx.addNewMajorGridlines().addNewSpPr().addNewLn().addNewSolidFill().setSrgbClr(rgb);
+	}
+
 	private void createAxis(long id, AxisPosition pos) {
 		ctValAx = chart.getCTChart().getPlotArea().addNewValAx();
 		ctValAx.addNewAxId().setVal(id);
@@ -124,6 +130,9 @@ public class XSSFValueAxis extends XSSFChartAxis implements ValueAxis {
 		ctValAx.addNewMajorTickMark();
 		ctValAx.addNewMinorTickMark();
 
+		CTSRgbColor rgb = CTSRgbColor.Factory.newInstance();
+		rgb.setVal(new byte[]{(byte)0xb3,(byte)0xb3,(byte)0xb3});
+		ctValAx.addNewSpPr().addNewLn().addNewSolidFill().setSrgbClr(rgb);
 		setPosition(pos);
 		setOrientation(AxisOrientation.MIN_MAX);
 		setCrossBetween(AxisCrossBetween.MIDPOINT_CATEGORY);

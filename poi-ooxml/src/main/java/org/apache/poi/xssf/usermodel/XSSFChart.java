@@ -101,7 +101,7 @@ public final class XSSFChart extends POIXMLDocumentPart implements Chart, ChartA
 	protected XSSFChart(PackagePart part, PackageRelationship rel) throws IOException, XmlException {
 		super(part, rel);
 
-		chartSpace = ChartSpaceDocument.Factory.parse(part.getInputStream()).getChartSpace(); 
+		chartSpace = ChartSpaceDocument.Factory.parse(part.getInputStream()).getChartSpace();
 		chart = chartSpace.getChart();
 	}
 
@@ -138,7 +138,7 @@ public final class XSSFChart extends POIXMLDocumentPart implements Chart, ChartA
 	 * @return the underlying CTChartSpace bean
 	 */
 	@Internal
-	public CTChartSpace getCTChartSpace(){
+	public CTChartSpace getCTChartSpace() {
 		return chartSpace;
 	}
 
@@ -148,7 +148,7 @@ public final class XSSFChart extends POIXMLDocumentPart implements Chart, ChartA
 	 * @return the underlying CTChart bean
 	 */
 	@Internal
-	public CTChart getCTChart(){
+	public CTChart getCTChart() {
 		return chart;
 	}
 
@@ -227,6 +227,7 @@ public final class XSSFChart extends POIXMLDocumentPart implements Chart, ChartA
 		return categoryAxis;
 	}
 
+
 	public List<? extends XSSFChartAxis> getAxis() {
 		if (axis.isEmpty() && hasAxis()) {
 			parseAxis();
@@ -255,10 +256,21 @@ public final class XSSFChart extends POIXMLDocumentPart implements Chart, ChartA
 	}
 
 	/**
+	 *
+	 * @param text
+	 */
+	public void setTitle(XSSFRichTextString text) {
+		if (chart.getTitle() == null)
+			chart.addNewTitle();
+		if (chart.getTitle().getTxPr() == null)
+			chart.getTitle().addNewTx().addNewRich().addNewP().addNewR().setT(text.getString());
+	}
+
+	/**
 	 * Returns the title, or null if none is set
 	 */
 	public XSSFRichTextString getTitle() {
-		if(! chart.isSetTitle()) {
+		if (!chart.isSetTitle()) {
 			return null;
 		}
 

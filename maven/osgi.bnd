@@ -1,3 +1,4 @@
+Bundle-Version: @VERSION@-@DSTAMP@
 Export-Package: org.apache.poi.*;-split-package:=merge-first, \
   org.openxmlformats.*
 Import-Package: !org.openxmlformats.schemas*, \
@@ -6,7 +7,7 @@ Import-Package: !org.openxmlformats.schemas*, \
   junit*;resolution:=optional, \
   org.apache.commons.logging;resolution:=optional, \
   *
-Include-Resource: @poi-4.0-beta1-@DSTAMP@.jar=build/dist/poi-4.0-beta1-@DSTAMP@.jar , \
-  @poi-ooxml-4.0-beta1-@DSTAMP@.jar=build/dist/poi-ooxml-4.0-beta1-@DSTAMP@.jar, \
-  @poi-scratchpad-4.0-beta1-@DSTAMP@.jar=build/dist/poi-scratchpad-4.0-beta1-@DSTAMP@.jar, \
-  @poi-ooxml-schemas-4.0-beta1-@DSTAMP@.jar=build/dist/poi-ooxml-schemas-4.0-beta1-@DSTAMP@.jar
+Include-Resource: @build/dist/poi-@VERSION@-@DSTAMP@.jar, \
+  @build/dist/poi-ooxml-@VERSION@-@DSTAMP@.jar, \
+  @build/dist/poi-scratchpad-@VERSION@-@DSTAMP@.jar, \
+  @build/dist/poi-ooxml-schemas-@VERSION@-@DSTAMP@.jar
