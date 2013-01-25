@@ -53,6 +53,20 @@ class XSSFChartUtil {
     }
 
     /**
+	 * Builds CTSerTx object content from POI ChartDataSource.
+	 *
+	 * @param ctTxDataSource
+	 *            OOXML data source to build
+	 * @param dataSource
+	 *            POI data source to use
+	 */
+	public static void buildTxDataSource(CTSerTx ctTxDataSource, ChartDataSource<?> dataSource) {
+		if (dataSource.isReference()) {
+			buildStrRef(ctTxDataSource.addNewStrRef(), dataSource);
+		}
+	}
+
+	/**
      * Builds CTNumDataSource object content from POI ChartDataSource
      * @param ctNumDataSource OOXML data source to build
      * @param dataSource POI data source to use

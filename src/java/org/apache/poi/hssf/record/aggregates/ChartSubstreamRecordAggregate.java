@@ -31,7 +31,7 @@ import org.apache.poi.hssf.record.*;
  */
 public final class ChartSubstreamRecordAggregate extends RecordAggregate {
 
-	private final BOFRecord _bofRec;
+	public final BOFRecord _bofRec;
 	/**
 	 * All the records between BOF and EOF
 	 */

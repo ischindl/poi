@@ -65,257 +65,269 @@ import org.w3c.dom.Text;
  */
 public final class XSSFChart extends POIXMLDocumentPart implements Chart, ChartAxisFactory {
 
-	/**
-	 * Parent graphic frame.
-	 */
-	private XSSFGraphicFrame frame;
+    /**
+     * Parent graphic frame.
+     */
+    private XSSFGraphicFrame frame;
 
-	/**
-	 * Root element of the SpreadsheetML Chart part
-	 */
-	private CTChartSpace chartSpace;
-	/**
-	 * The Chart within that
-	 */
-	private CTChart chart;
+    /**
+     * Root element of the SpreadsheetML Chart part
+     */
+    private CTChartSpace chartSpace;
+    /**
+     * The Chart within that
+     */
+    private CTChart chart;
 
-	List<XSSFChartAxis> axis;
+    List<XSSFChartAxis> axis;
 
-	/**
-	 * Create a new SpreadsheetML chart
-	 */
-	protected XSSFChart() {
-		super();
-		axis = new ArrayList<XSSFChartAxis>();
-		createChart();
-	}
+    /**
+     * Create a new SpreadsheetML chart
+     */
+    protected XSSFChart() {
+        super();
+        axis = new ArrayList<XSSFChartAxis>();
+        createChart();
+    }
 
-	/**
-	 * Construct a SpreadsheetML chart from a package part.
-	 *
-	 * @param part the package part holding the chart data,
-	 * the content type must be <code>application/vnd.openxmlformats-officedocument.drawingml.chart+xml</code>
-	 * @param rel  the package relationship holding this chart,
-	 * the relationship type must be http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart
-	 */
-	protected XSSFChart(PackagePart part, PackageRelationship rel) throws IOException, XmlException {
-		super(part, rel);
+    /**
+     * Construct a SpreadsheetML chart from a package part.
+     *
+     * @param part the package part holding the chart data,
+     * the content type must be <code>application/vnd.openxmlformats-officedocument.drawingml.chart+xml</code>
+     * @param rel  the package relationship holding this chart,
+     * the relationship type must be http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart
+     */
+    protected XSSFChart(PackagePart part, PackageRelationship rel) throws IOException, XmlException {
+        super(part, rel);
 
-		chartSpace = ChartSpaceDocument.Factory.parse(part.getInputStream()).getChartSpace(); 
-		chart = chartSpace.getChart();
-	}
+        chartSpace = ChartSpaceDocument.Factory.parse(part.getInputStream()).getChartSpace();
+        chart = chartSpace.getChart();
+    }
 
-	/**
-	 * Construct a new CTChartSpace bean.
-	 * By default, it's just an empty placeholder for chart objects.
-	 *
-	 * @return a new CTChartSpace bean
-	 */
-	private void createChart() {
-		chartSpace = CTChartSpace.Factory.newInstance();
-		chart = chartSpace.addNewChart();
-		CTPlotArea plotArea = chart.addNewPlotArea();
+    /**
+     * Construct a new CTChartSpace bean.
+     * By default, it's just an empty placeholder for chart objects.
+     *
+     * @return a new CTChartSpace bean
+     */
+    private void createChart() {
+        chartSpace = CTChartSpace.Factory.newInstance();
+        chart = chartSpace.addNewChart();
+        CTPlotArea plotArea = chart.addNewPlotArea();
 
-		plotArea.addNewLayout();
-		chart.addNewPlotVisOnly().setVal(true);
+        plotArea.addNewLayout();
+        chart.addNewPlotVisOnly().setVal(true);
 
-		CTPrintSettings printSettings = chartSpace.addNewPrintSettings();
-		printSettings.addNewHeaderFooter();
+        CTPrintSettings printSettings = chartSpace.addNewPrintSettings();
+        printSettings.addNewHeaderFooter();
 
-		CTPageMargins pageMargins = printSettings.addNewPageMargins();
-		pageMargins.setB(0.75);
-		pageMargins.setL(0.70);
-		pageMargins.setR(0.70);
-		pageMargins.setT(0.75);
-		pageMargins.setHeader(0.30);
-		pageMargins.setFooter(0.30);
-		printSettings.addNewPageSetup();
-	}
+        CTPageMargins pageMargins = printSettings.addNewPageMargins();
+        pageMargins.setB(0.75);
+        pageMargins.setL(0.70);
+        pageMargins.setR(0.70);
+        pageMargins.setT(0.75);
+        pageMargins.setHeader(0.30);
+        pageMargins.setFooter(0.30);
+        printSettings.addNewPageSetup();
+    }
 
-	/**
-	 * Return the underlying CTChartSpace bean, the root element of the SpreadsheetML Chart part.
-	 *
-	 * @return the underlying CTChartSpace bean
-	 */
-	@Internal
-	public CTChartSpace getCTChartSpace(){
-		return chartSpace;
-	}
+    /**
+     * Return the underlying CTChartSpace bean, the root element of the SpreadsheetML Chart part.
+     *
+     * @return the underlying CTChartSpace bean
+     */
+    @Internal
+    public CTChartSpace getCTChartSpace() {
+        return chartSpace;
+    }
 
-	/**
-	 * Return the underlying CTChart bean, within the Chart Space
-	 *
-	 * @return the underlying CTChart bean
-	 */
-	@Internal
-	public CTChart getCTChart(){
-		return chart;
-	}
+    /**
+     * Return the underlying CTChart bean, within the Chart Space
+     *
+     * @return the underlying CTChart bean
+     */
+    @Internal
+    public CTChart getCTChart() {
+        return chart;
+    }
 
-	@Override
-	protected void commit() throws IOException {
-		XmlOptions xmlOptions = new XmlOptions(DEFAULT_XML_OPTIONS);
+    @Override
+    protected void commit() throws IOException {
+        XmlOptions xmlOptions = new XmlOptions(DEFAULT_XML_OPTIONS);
 
-		/*
-		   Saved chart space must have the following namespaces set:
-		   <c:chartSpace
-		      xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"
-		      xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
-		      xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
-		 */
-		xmlOptions.setSaveSyntheticDocumentElement(new QName(CTChartSpace.type.getName().getNamespaceURI(), "chartSpace", "c"));
-		Map<String, String> map = new HashMap<String, String>();
-		map.put(XSSFDrawing.NAMESPACE_A, "a");
-		map.put(XSSFDrawing.NAMESPACE_C, "c");
-		map.put(STRelationshipId.type.getName().getNamespaceURI(), "r");
-		xmlOptions.setSaveSuggestedPrefixes(map);
+        /*
+           Saved chart space must have the following namespaces set:
+           <c:chartSpace
+              xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"
+              xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+              xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+         */
+        xmlOptions.setSaveSyntheticDocumentElement(new QName(CTChartSpace.type.getName().getNamespaceURI(), "chartSpace", "c"));
+        Map<String, String> map = new HashMap<String, String>();
+        map.put(XSSFDrawing.NAMESPACE_A, "a");
+        map.put(XSSFDrawing.NAMESPACE_C, "c");
+        map.put(STRelationshipId.type.getName().getNamespaceURI(), "r");
+        xmlOptions.setSaveSuggestedPrefixes(map);
 
-		PackagePart part = getPackagePart();
-		OutputStream out = part.getOutputStream();
-		chartSpace.save(out, xmlOptions);
-		out.close();
-	}
+        PackagePart part = getPackagePart();
+        OutputStream out = part.getOutputStream();
+        chartSpace.save(out, xmlOptions);
+        out.close();
+    }
 
-	/**
-	 * Returns the parent graphic frame.
-	 * @return the graphic frame this chart belongs to
-	 */
-	public XSSFGraphicFrame getGraphicFrame() {
-		return frame;
-	}
+    /**
+     * Returns the parent graphic frame.
+     * @return the graphic frame this chart belongs to
+     */
+    public XSSFGraphicFrame getGraphicFrame() {
+        return frame;
+    }
 
-	/**
-	 * Sets the parent graphic frame.
-	 */
-	protected void setGraphicFrame(XSSFGraphicFrame frame) {
-		this.frame = frame;
-	}
+    /**
+     * Sets the parent graphic frame.
+     */
+    protected void setGraphicFrame(XSSFGraphicFrame frame) {
+        this.frame = frame;
+    }
 
-	public XSSFChartDataFactory getChartDataFactory() {
-		return XSSFChartDataFactory.getInstance();
-	}
+    public XSSFChartDataFactory getChartDataFactory() {
+        return XSSFChartDataFactory.getInstance();
+    }
 
-	public XSSFChart getChartAxisFactory() {
-		return this;
-	}
+    public XSSFChart getChartAxisFactory() {
+        return this;
+    }
 
-	public void plot(ChartData data, ChartAxis... axis) {
-		data.fillChart(this, axis);
-	}
+    public void plot(ChartData data, ChartAxis... axis) {
+        data.fillChart(this, axis);
+    }
 
-	public XSSFValueAxis createValueAxis(AxisPosition pos) {
-		long id = axis.size() + 1;
-		XSSFValueAxis valueAxis = new XSSFValueAxis(this, id, pos);
-		if (axis.size() == 1) {
-			ChartAxis ax = axis.get(0);
-			ax.crossAxis(valueAxis);
-			valueAxis.crossAxis(ax);
-		}
-		axis.add(valueAxis);
-		return valueAxis;
-	}
+    public XSSFValueAxis createValueAxis(AxisPosition pos) {
+        long id = axis.size() + 1;
+        XSSFValueAxis valueAxis = new XSSFValueAxis(this, id, pos);
+        if (axis.size() == 1) {
+            ChartAxis ax = axis.get(0);
+            ax.crossAxis(valueAxis);
+            valueAxis.crossAxis(ax);
+        }
+        axis.add(valueAxis);
+        return valueAxis;
+    }
 
-	public XSSFCategoryAxis createCategoryAxis(AxisPosition pos) {
-		long id = axis.size() + 1;
-		XSSFCategoryAxis categoryAxis = new XSSFCategoryAxis(this, id, pos);
-		if (axis.size() == 1) {
-			ChartAxis ax = axis.get(0);
-			ax.crossAxis(categoryAxis);
-			categoryAxis.crossAxis(ax);
-		}
-		axis.add(categoryAxis);
-		return categoryAxis;
-	}
+    public XSSFCategoryAxis createCategoryAxis(AxisPosition pos) {
+        long id = axis.size() + 1;
+        XSSFCategoryAxis categoryAxis = new XSSFCategoryAxis(this, id, pos);
+        if (axis.size() == 1) {
+            ChartAxis ax = axis.get(0);
+            ax.crossAxis(categoryAxis);
+            categoryAxis.crossAxis(ax);
+        }
+        axis.add(categoryAxis);
+        return categoryAxis;
+    }
 
-	public List<? extends XSSFChartAxis> getAxis() {
-		if (axis.isEmpty() && hasAxis()) {
-			parseAxis();
-		}
-		return axis;
-	}
 
-	public XSSFManualLayout getManualLayout() {
-		return new XSSFManualLayout(this);
-	}
+    public List<? extends XSSFChartAxis> getAxis() {
+        if (axis.isEmpty() && hasAxis()) {
+            parseAxis();
+        }
+        return axis;
+    }
 
-	/**
-	 * @return true if only visible cells will be present on the chart,
-	 *         false otherwise
-	 */
-	public boolean isPlotOnlyVisibleCells() {
-		return chart.getPlotVisOnly().getVal();
-	}
+    public XSSFManualLayout getManualLayout() {
+        return new XSSFManualLayout(this);
+    }
 
-	/**
-	 * @param plotVisOnly a flag specifying if only visible cells should be
-	 *        present on the chart
-	 */
-	public void setPlotOnlyVisibleCells(boolean plotVisOnly) {
-		chart.getPlotVisOnly().setVal(plotVisOnly);
-	}
+    /**
+     * @return true if only visible cells will be present on the chart,
+     *         false otherwise
+     */
+    public boolean isPlotOnlyVisibleCells() {
+        return chart.getPlotVisOnly().getVal();
+    }
 
-	/**
-	 * Returns the title, or null if none is set
-	 */
-	public XSSFRichTextString getTitle() {
-		if(! chart.isSetTitle()) {
-			return null;
-		}
+    /**
+     * @param plotVisOnly a flag specifying if only visible cells should be
+     *        present on the chart
+     */
+    public void setPlotOnlyVisibleCells(boolean plotVisOnly) {
+        chart.getPlotVisOnly().setVal(plotVisOnly);
+    }
 
-		// TODO Do properly
-		CTTitle title = chart.getTitle();
+    /**
+     *
+     * @param text
+     */
+    public void setTitle(XSSFRichTextString text) {
+        if (chart.getTitle() == null)
+            chart.addNewTitle();
+        if (chart.getTitle().getTxPr() == null)
+            chart.getTitle().addNewTx().addNewRich().addNewP().addNewR().setT(text.getString());
+    }
 
-		StringBuffer text = new StringBuffer();
-		XmlObject[] t = title
-			.selectPath("declare namespace a='"+XSSFDrawing.NAMESPACE_A+"' .//a:t");
-		for (int m = 0; m < t.length; m++) {
-			NodeList kids = t[m].getDomNode().getChildNodes();
-			for (int n = 0; n < kids.getLength(); n++) {
-				if (kids.item(n) instanceof Text) {
-					text.append(kids.item(n).getNodeValue());
-				}
-			}
-		}
+    /**
+     * Returns the title, or null if none is set
+     */
+    public XSSFRichTextString getTitle() {
+        if (!chart.isSetTitle()) {
+            return null;
+        }
 
-		return new XSSFRichTextString(text.toString());
-	}
+        // TODO Do properly
+        CTTitle title = chart.getTitle();
 
-	public XSSFChartLegend getOrCreateLegend() {
-		return new XSSFChartLegend(this);
-	}
+        StringBuffer text = new StringBuffer();
+        XmlObject[] t = title
+            .selectPath("declare namespace a='"+XSSFDrawing.NAMESPACE_A+"' .//a:t");
+        for (int m = 0; m < t.length; m++) {
+            NodeList kids = t[m].getDomNode().getChildNodes();
+            for (int n = 0; n < kids.getLength(); n++) {
+                if (kids.item(n) instanceof Text) {
+                    text.append(kids.item(n).getNodeValue());
+                }
+            }
+        }
 
-	public void deleteLegend() {
-		if (chart.isSetLegend()) {
-			chart.unsetLegend();
-		}
-	}
+        return new XSSFRichTextString(text.toString());
+    }
 
-	private boolean hasAxis() {
-		CTPlotArea ctPlotArea = chart.getPlotArea();
-		int totalAxisCount =
-			ctPlotArea.sizeOfValAxArray()  +
-			ctPlotArea.sizeOfCatAxArray()  +
-			ctPlotArea.sizeOfDateAxArray() +
-			ctPlotArea.sizeOfSerAxArray();
-		return totalAxisCount > 0;
-	}
+    public XSSFChartLegend getOrCreateLegend() {
+        return new XSSFChartLegend(this);
+    }
 
-	private void parseAxis() {
-		// TODO: add other axis types
-		parseCategoryAxis();
-		parseValueAxis();
-	}
+    public void deleteLegend() {
+        if (chart.isSetLegend()) {
+            chart.unsetLegend();
+        }
+    }
 
-	private void parseCategoryAxis() {
-		for (CTCatAx catAx : chart.getPlotArea().getCatAxList()) {
-			axis.add(new XSSFCategoryAxis(this, catAx));
-		}
-	}
+    private boolean hasAxis() {
+        CTPlotArea ctPlotArea = chart.getPlotArea();
+        int totalAxisCount =
+            ctPlotArea.sizeOfValAxArray()  +
+            ctPlotArea.sizeOfCatAxArray()  +
+            ctPlotArea.sizeOfDateAxArray() +
+            ctPlotArea.sizeOfSerAxArray();
+        return totalAxisCount > 0;
+    }
 
-	private void parseValueAxis() {
-		for (CTValAx valAx : chart.getPlotArea().getValAxList()) {
-			axis.add(new XSSFValueAxis(this, valAx));
-		}
-	}
+    private void parseAxis() {
+        // TODO: add other axis types
+        parseCategoryAxis();
+        parseValueAxis();
+    }
+
+    private void parseCategoryAxis() {
+        for (CTCatAx catAx : chart.getPlotArea().getCatAxList()) {
+            axis.add(new XSSFCategoryAxis(this, catAx));
+        }
+    }
+
+    private void parseValueAxis() {
+        for (CTValAx valAx : chart.getPlotArea().getValAxList()) {
+            axis.add(new XSSFValueAxis(this, valAx));
+        }
+    }
 
 }

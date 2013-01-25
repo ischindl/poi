@@ -46,6 +46,13 @@ public class XSSFChartDataFactory implements ChartDataFactory {
 		return new XSSFLineChartData();
 	}
 
+   /**
+     * @return new pie charts data instance
+     */
+    public XSSFPieChartData createPieChartData() {
+        return new XSSFPieChartData();
+    }
+
 	/**
 	 * @return factory instance
 	 */

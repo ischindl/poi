@@ -77,6 +77,7 @@ public final class XSSFChartLegend implements ChartLegend {
 			legend.addNewLegendPos();
 		}
 		legend.getLegendPos().setVal(fromLegendPosition(position));
+		legend.addNewOverlay().setVal(false);
 	}
 
 	/*
