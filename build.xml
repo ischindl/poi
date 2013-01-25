@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- 
+<!--
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
 distributed with this work for additional information
@@ -30,7 +30,7 @@ under the License.
         Yegor Kozlov        yegor at apache.org
 
     This build was tested with ant 1.6.2 although it will probably work with
-    other versions.  The following jar files should be available on the 
+    other versions.  The following jar files should be available on the
     classpath when running ant:
 
     LIBRARY         LOCATION
@@ -40,18 +40,18 @@ under the License.
     To build the documentation you will need to install forrest and set
     the FORREST_HOME environment variable.  Forrest 0.5.1 required.
 
-    Since POI 3.5 you will need JDK 1.5 or newer to build POI. 
+    Since POI 3.5 you will need JDK 1.5 or newer to build POI.
 
     Some people may find the tests hang when run through Ant. If this
     happens to you, try giving Ant some more memory when you run it, eg:
           ANT_OPTS="-Xmx1024m -XX:MaxPermSize=256m" ant test
 
  -->
-<project name="POI Build" default="help" basedir="." xmlns:mvn="antlib:org.apache.maven.artifact.ant">
+<project name="POI Build" default="help" basedir="."  xmlns:mvn="antlib:org.apache.maven.artifact.ant">
 
     <description>The Apache POI project Ant build.</description>
 
-    <property name="version.id" value="4.0-beta1"/>
+	<property name="version.id" value="4.0-beta1"/>
 
     <property environment="env"/>
     <!-- the repository to download jars from -->
@@ -66,9 +66,9 @@ under the License.
     <property name="jdk.version.class" value="1.5" description="JDK version of generated class files"/>
     <property name="compile.debug" value="true"/>
 
-    <!-- 
-        Logging is suppressed by default. 
-        To redirect log output to console, run ant with -Dorg.apache.poi.util.POILogger=org.apache.poi.util.SystemOutLogger  
+    <!--
+        Logging is suppressed by default.
+        To redirect log output to console, run ant with -Dorg.apache.poi.util.POILogger=org.apache.poi.util.SystemOutLogger
     -->
     <property name="org.apache.poi.util.POILogger" value="org.apache.poi.util.NullLogger"/>
 
@@ -82,7 +82,7 @@ under the License.
     <property name="poi.test.locale" value="-Duser.language=en -Duser.country=US"/>
     <property name="POI.testdata.path" value="test-data"/>
     <property name="java.awt.headless" value="true"/>
-    
+
     <!-- Main: -->
     <property name="main.resource1.dir" value="src/resources/main"/>
     <property name="main.src" location="src/java"/>
@@ -251,11 +251,17 @@ under the License.
         <pathelement location="${main.output.test.dir}"/>
     </path>
 
+	<target name="initTaskDefs">
+	    <xmlproperty file="pom.xml" prefix="xmlPom" />
+	    <path id="maven-ant-tasks.classpath" path="maven/maven-ant-tasks-2.1.3.jar" />
+	    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant" classpathref="maven-ant-tasks.classpath" />
+	  </target>
+	<!-- uri="antlib:org.apache.maven.artifact.ant" -->
     <!-- Prints POI's Ant usage help -->
     <target name="help" description="Prints Apache POI's Ant usage help">
       <echo>
   This is POI ${version.id}
-  Java Version ${ant.java.version}      
+  Java Version ${ant.java.version}
   Timestamp ${DSTAMP}
   The main targets of interest are:
     - clean       Erase all build work products (ie. everything in the build directory)
@@ -671,12 +677,12 @@ under the License.
             <syspropertyset refid="junit.properties"/>
             <jvmarg value="${poi.test.locale}"/>
             <jvmarg value="-ea"/>
-            <!-- 
-              YK: ensure that JUnit has enough memory to run tests. 
-              Without the line below tests fail on Mac OS X with jdk-1.6.26 
-              and on Windows with jdk-1.5.22 
+            <!--
+              YK: ensure that JUnit has enough memory to run tests.
+              Without the line below tests fail on Mac OS X with jdk-1.6.26
+              and on Windows with jdk-1.5.22
             -->
-            <jvmarg value="-Xmx256M"/>            
+            <jvmarg value="-Xmx256M"/>
             <formatter type="plain"/>
             <batchtest todir="${scratchpad.reports.test}">
                 <fileset dir="${scratchpad.src.test}">
@@ -700,7 +706,7 @@ under the License.
         </uptodate>
     </target>
 
-    <macrodef name="ooxml-test-runner">    
+    <macrodef name="ooxml-test-runner">
         <attribute name="classpath"/>
         <sequential>
           <junit printsummary="yes" fork="yes" forkmode="once" haltonfailure="${halt.on.test.failure}"
@@ -718,7 +724,7 @@ under the License.
               </batchtest>
           </junit>
         </sequential>
-    </macrodef>    
+    </macrodef>
 
     <target name="test-ooxml" depends="compile-main,compile-ooxml,-test-ooxml-check" unless="ooxml.test.notRequired">
         <ooxml-test-runner classpath="test.ooxml.classpath"/>
@@ -749,7 +755,7 @@ under the License.
         <echo message="Running ooxml tests against 'poi-ooxml-schemas'"/>
         <ooxml-test-runner classpath="ooxml-lite.classpath"/>
     </target>
-    
+
     <target name="-test-excelant-check">
         <uptodate property="excelant.test.notRequired" targetfile="${excelant.testokfile}">
             <srcfiles dir="${excelant.src}"/>
@@ -943,6 +949,14 @@ under the License.
                 </replacetokens>
             </filterchain>
         </copy>
+    	<copy file="maven/osgi.bnd" todir="${dist.dir}">
+    	            <filterchain>
+    	                <replacetokens>
+    	                    <token key="VERSION" value="${version.id}"/>
+    	                    <token key="DSTAMP" value="${DSTAMP}"/>
+    	                </replacetokens>
+    	            </filterchain>
+    	        </copy>
         <echo>Maven POMs are located in ${dist.dir}</echo>
         <echo>Use mvn-deploy.sh to deploy the artifacts in the remote repository</echo>
     </target>
@@ -988,6 +1002,14 @@ under the License.
             <fileset dir="${excelant.output.dir}"/>
             <metainf dir="legal/"/>
         </jar>
+    	<copy file="maven/osgi.bnd" todir="${dist.dir}">
+        	<filterchain>
+        	   <replacetokens>
+        	       <token key="VERSION" value="${version.id}"/>
+        	       <token key="DSTAMP" value="${DSTAMP}"/>
+        	   </replacetokens>
+        	</filterchain>
+        </copy>
     </target>
 
     <target name="jar-src" description="Sources for Maven">
@@ -1019,7 +1041,7 @@ under the License.
     </target>
 
     <target name="assemble" depends="jar,jar-src">
-         <!-- jars to include in binary assemblies -->         
+         <!-- jars to include in binary assemblies -->
          <patternset id="bin.dist.jars">
             <include name="${jar.name}-${version.id}-${DSTAMP}.jar"/>
             <include name="${jar.name}-scratchpad-${version.id}-${DSTAMP}.jar"/>
@@ -1027,9 +1049,9 @@ under the License.
             <include name="${jar.name}-examples-${version.id}-${DSTAMP}.jar"/>
             <include name="${jar.name}-ooxml-schemas-${version.id}-${DSTAMP}.jar"/>
             <include name="${jar.name}-excelant-${version.id}-${DSTAMP}.jar"/>
-         </patternset>  
+         </patternset>
 
-        <!-- patterns to exclude from source assemblies -->         
+        <!-- patterns to exclude from source assemblies -->
         <patternset id="src.dist.patterns"
             excludes="build/**,
                       maven/**,
@@ -1047,7 +1069,7 @@ under the License.
                       .classpath,
                       .settings/**,
                       .project"/>
-         
+
         <property name="zipdir" value="${jar.name}-${version.id}"/>
 
         <zip destfile="${dist.dir}/${jar.name}-bin-${version.id}-${DSTAMP}.zip">
@@ -1076,7 +1098,7 @@ under the License.
                 <patternset refid="src.dist.patterns"/>
             </zipfileset>
         </zip>
-        
+
         <tar destfile="${dist.dir}/${jar.name}-bin-${version.id}-${DSTAMP}.tar.gz"
                longfile="gnu"
                compression="gzip">
@@ -1107,7 +1129,7 @@ under the License.
                 <patternset refid="src.dist.patterns"/>
             </tarfileset>
         </tar>
-         
+
         <!-- script to create signatures and hashes -->
         <copy file="maven/multisign.sh" todir="${dist.dir}"/>
 
@@ -1126,28 +1148,28 @@ under the License.
     <target name="jenkins" depends="compile-all, test-all, jar, javadocs, assemble"/>
 
     <available property="maven.ant.tasks.present" classname="org.apache.maven.artifact.ant.Pom"/>
-    <target name="maven.ant.tasks-check">
-      <fail unless="maven.ant.tasks.present">
+    <target name="maven.ant.tasks-check" depends="initTaskDefs">
+  <!--  <fail unless="maven.ant.tasks.present">
       Maven ant tasks not found.
-      Please make sure the maven-ant-tasks jar is in ANT_HOME/lib, or made 
+      Please make sure the maven-ant-tasks jar is in ANT_HOME/lib, or made
       available to Ant using other mechanisms like -lib or CLASSPATH.
-      
+
       You can download the Maven Ant Tasks from http://maven.apache.org/ant-tasks/download.html
-      </fail>
+      </fail> -->
     </target>
 
     <macrodef name="m2-install">
       <attribute name="artifactId"/>
-      
+
       <sequential>
         <mvn:install file="${dist.dir}/@{artifactId}-${version.id}-${DSTAMP}.jar">
           <pom file="${dist.dir}/@{artifactId}-${version.id}.pom"/>
         </mvn:install>
       </sequential>
-    </macrodef>  
+    </macrodef>
 
     <!--
-      Install POI artifacts into the local repository. 
+      Install POI artifacts into the local repository.
       Invoking this command is equivalent to 'mvn install' in Maven-driven projects.
     -->
     <target name="mvn-install" depends="maven.ant.tasks-check,jar,maven-poms">
@@ -1158,7 +1180,7 @@ under the License.
       <m2-install artifactId="poi-ooxml-schemas"/>
       <m2-install artifactId="poi-excelant"/>
     </target>
-    
+
     <!-- Runs Apache Rat against the source code, to spot any files -->
     <!--  which are missing the correct license headers -->
     <!-- You need to download rat from http://incubator.apache.org/rat/ -->
