@@ -1,30 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="src" path="src/testcases"/>
-	<classpathentry kind="src" path="src/resources/main"/>
-	<classpathentry kind="src" path="src/ooxml/java"/>
-	<classpathentry kind="src" path="src/ooxml/testcases"/>
-	<classpathentry kind="src" path="src/resources/ooxml"/>
-	<classpathentry kind="src" path="src/scratchpad/src"/>
-	<classpathentry kind="src" path="src/scratchpad/testcases"/>
-	<classpathentry kind="src" path="src/resources/scratchpad"/>
-	<classpathentry kind="src" path="src/contrib/poi-ruby/java"/>
-	<classpathentry kind="src" path="src/examples/src"/>
-	<classpathentry kind="src" path="src/excelant/java"/>
-	<classpathentry kind="src" path="src/excelant/testcases"/>
-	<classpathentry kind="src" path="src/excelant/resources"/>
-	<classpathentry kind="lib" path="lib/ant-1.8.2.jar"/>
-	<classpathentry kind="lib" path="lib/commons-codec-1.9.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging-1.1.3.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="ooxml-lib/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="ooxml-lib/stax-api-1.0.1.jar"/>
-	<classpathentry kind="lib" path="ooxml-lib/xmlbeans-2.3.0.jar"/>
-	<classpathentry kind="lib" path="lib/hamcrest-core-1.3.jar"/>
-	<classpathentry kind="lib" path="lib/junit-4.11.jar"/>
-	<classpathentry kind="lib" path="ooxml-lib/ooxml-schemas-1.1.jar" sourcepath="ooxml-lib/ooxml-schemas-src-1.1.jar"/>
-	<classpathentry kind="lib" path="ooxml-lib/ooxml-encryption-1.1.jar" sourcepath="ooxml-lib/ooxml-encryption-src-1.1.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="output" path="build/eclipse"/>
+	<classpathentry kind="src" output="build/dist/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="build/dist/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="build/dist/classes"/>
 </classpath>
